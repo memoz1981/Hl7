@@ -7,8 +7,8 @@ public class AppointmentDto
     public string AppointmentType { get; set; }
     public string ModalityId { get; set; }
     public int Duration { get; set; }
-    public Patient Patient { get; set; }
-    public Doctor Doctor { get; set; }
+    public PatientDto Patient { get; set; }
+    public DoctorDto Doctor { get; set; }
     public string ServiceName { get; set; }
     public string ThirdPartyName { get; set; }
     public string EquipmentName { get; set; }
