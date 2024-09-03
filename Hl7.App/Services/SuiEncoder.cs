@@ -1,6 +1,11 @@
-﻿namespace Hl7.App.Services; 
+﻿using Hl7.App.Dto;
 
-public class SuiEncoder
+namespace Hl7.App.Services;
+
+public class SuiEncoder : ISuiEncoder
 {
-    public string Encode(SuiMessage message);
+    public string Encode(AppointmentDto appointment)
+    {
+        throw new NotImplementedException();
+    }
 }
