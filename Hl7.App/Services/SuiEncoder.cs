@@ -1,8 +1,6 @@
 ﻿using Hl7.App.Dto;
-using NHapi.Base.Model;
 using NHapi.Base.Parser;
-using NHapi.Model.V23.Group;
-using NHapi.Model.V23.Message; 
+using NHapi.Model.V23.Message;
 
 namespace Hl7.App.Services;
 
@@ -54,26 +52,23 @@ public class SuiEncoder : ISuiEncoder
     private void AssignPID(AppointmentDto appointment, SIU_S12 message)
     {
         var pid = message.AddPATIENT();
-        message.SCH.
 
-        var patient = new SIU_S12_PATIENT(IGroup );
+        pid.PID.SetIDPatientID.Value = appointment.Patient.Id;
+        //document type
+        pid.PID.Sex.Value = appointment.Patient.Sex;
+        pid.PID.DateOfBirth.TimeOfAnEvent.Set(appointment.Patient.DateOfBirth, "yyyy-MM-dd");
+        pid.PID.MotherSMaidenName.FamilyName.Value = appointment.Patient.MaternalSurname; 
 
-        pid.PatientIdentifierList[0].ID.Value = appointment.Patient.Id;
-        pid.PatientIdentifierList[0].IdentifierTypeCode.Value = appointment.Patient.DocumentType;
-        pid.PatientName.FamilyName.Surname.Value = appointment.Patient.ParentSurname;
-        pid.PatientName.GivenName.Value = appointment.Patient.Name;
-        pid.PatientDateOfBirth.TimeOfAnEvent.Value = appointment.Patient.DateOfBirth.ToString("yyyyMMdd");
-        pid.PatientSex.Value = appointment.Patient.Sex;
     }
 
     private void AssignPV1(AppointmentDto appointment, SIU_S12 message)
     {
-        throw new NotImplementedException();
+        
     }
 
     private void AssignRGS(AppointmentDto appointment, SIU_S12 message)
     {
-        throw new NotImplementedException();
+        var res = message.AddRESOURCES(); 
     }
 
     private void AssignAIG(AppointmentDto appointment, SIU_S12 message)
