@@ -32,5 +32,4 @@ public class MedicalRecordController : ControllerBase
             return StatusCode(500, "Some error occured, see the logs...");
         }
     }
-
 }
