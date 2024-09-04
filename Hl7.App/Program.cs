@@ -9,6 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ISuiEncoder, SuiEncoder>();
+builder.Services.AddSingleton<IMdmDecoder, MdmDecoder>(); 
 
 var app = builder.Build();
 
