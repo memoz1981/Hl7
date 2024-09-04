@@ -25,22 +25,25 @@ public class MdmDecoder : IMdmDecoder
         var phoneHome = mdm.PID.GetPhoneNumberHome().FirstOrDefault();
         var phoneBusiness = mdm.PID.GetPhoneNumberBusiness().FirstOrDefault();
 
+        var alternateIdentifier = mdm.PID.AlternatePatientIDPID; 
+        var identifier = mdm.PID.GetPatientIdentifierList().FirstOrDefault(); 
+
         var patient = new PatientDto()
         {
-            Id = mdm.PID.PatientID.IDNumber.Value,
-            DocumentType = mdm.PID.PatientID.TypeName,
+            Id = alternateIdentifier.IDNumber.Value,
+            DocumentType = alternateIdentifier.IdentifierTypeCode.Value,
             ParentSurname = patientName?.FamilyName.Surname.Value,
-            MaternalSurname = patientName?.FamilyName.OwnSurname.Value,
+            MaternalSurname = mdm.PID.GetMotherSMaidenName()?.FirstOrDefault()?.FamilyName.Surname.Value,
             Name = patientName?.GivenName.Value,
             DateOfBirth = dateOfBirth,
             Sex = mdm.PID.AdministrativeSex.Identifier.Value,
             Address = patientAddress?.StreetAddress.StreetOrMailingAddress.Value,
-            Locality = patientAddress?.ZipOrPostalCode.Value,
+            Locality = patientAddress?.OtherDesignation.Value,
             City = patientAddress?.City.Value,
             State = patientAddress?.StateOrProvince.Value,
             Country = patientAddress?.Country.Value,
             Phone = (phoneHome??phoneBusiness)?.TelephoneNumber.Value,
-            Email = ""
+            Email = (phoneHome ?? phoneBusiness)?.TelecommunicationUseCode.Value
         };
 
         var doc = mdm.PV1.GetAttendingDoctor().FirstOrDefault(); 
@@ -52,15 +55,23 @@ public class MdmDecoder : IMdmDecoder
         };
 
         var observation = mdm.OBSERVATIONs.FirstOrDefault(); 
-        var obx = observation.OBX;
+        var obx = observation?.OBX;
         var obr = (OBR)(mdm.Message.GetAll("OBR").FirstOrDefault());
         var orderNumber = obr?.GetOrderCallbackPhoneNumber()?.FirstOrDefault()?.TelephoneNumber.Value;
 
         var observationIdentifier = obx?.ObservationIdentifier;
         var observationValue = obx?.GetObservationValue().FirstOrDefault();
         var data = (RP)observationValue?.Data;
-        var text = data.Components.FirstOrDefault()?.ToString();
+        var file = data.ExtraComponents.GetComponent(0);
 
+        var fileText = string.Empty; 
+        if (file is not null)
+        {
+            fileText = file.Data.ToString(); 
+        }
+        var byteArray = string.IsNullOrWhiteSpace(fileText) ? null : Convert.FromBase64String(fileText);
+
+        var text = data.Components.FirstOrDefault()?.ToString();
         var codes = obx?.GetInterpretationCodes().FirstOrDefault();
 
         var record = new MedicalRecord()
@@ -71,7 +82,7 @@ public class MdmDecoder : IMdmDecoder
             StudyName = observationIdentifier?.Text.Value,
             ReportURL = obx.ObservationSubID.Value,
             ReportText = text,
-            ReportFile = new byte[1],
+            ReportFile = byteArray,
             ModalityId = codes?.Identifier.Value,
             ServiceName = obx.ProducerSID.Identifier.Value,
             Patient = patient,
