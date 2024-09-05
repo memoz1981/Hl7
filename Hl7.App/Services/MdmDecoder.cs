@@ -12,7 +12,11 @@ public class MdmDecoder : IMdmDecoder
     public MedicalRecord Decode(string message)
     {
         var parser = new PipeParser();
-        var mdm = (MDM_T02)parser.Parse(message);
+        var parsedMessage = parser.Parse(message);
+        var mdm = parsedMessage as MDM_T02;
+
+        if (parsedMessage is null)
+            return null;
 
         return BuildMedicalRecord(mdm);
     }
@@ -37,13 +41,6 @@ public class MdmDecoder : IMdmDecoder
             Name = patientName?.GivenName.Value,
             DateOfBirth = dateOfBirth,
             Sex = mdm.PID.AdministrativeSex.Identifier.Value,
-            Address = patientAddress?.StreetAddress.StreetOrMailingAddress.Value,
-            Locality = patientAddress?.OtherDesignation.Value,
-            City = patientAddress?.City.Value,
-            State = patientAddress?.StateOrProvince.Value,
-            Country = patientAddress?.Country.Value,
-            Phone = (phoneHome??phoneBusiness)?.TelephoneNumber.Value,
-            Email = (phoneHome ?? phoneBusiness)?.TelecommunicationUseCode.Value
         };
 
         var doc = mdm.PV1.GetAttendingDoctor().FirstOrDefault(); 
@@ -56,8 +53,8 @@ public class MdmDecoder : IMdmDecoder
 
         var observation = mdm.OBSERVATIONs.FirstOrDefault(); 
         var obx = observation?.OBX;
-        var obr = (OBR)(mdm.Message.GetAll("OBR").FirstOrDefault());
-        var orderNumber = obr?.GetOrderCallbackPhoneNumber()?.FirstOrDefault()?.TelephoneNumber.Value;
+        var obr = (OBR)(mdm.Message.GetStructure("OBR"));
+        var orderNumber = obr?.PlacerOrderNumber.EntityIdentifier.Value;
 
         var observationIdentifier = obx?.ObservationIdentifier;
         var observationValue = obx?.GetObservationValue().FirstOrDefault();
@@ -76,20 +73,33 @@ public class MdmDecoder : IMdmDecoder
 
         var record = new MedicalRecord()
         {
-            AccessionNumber = obr?.GetOrderCallbackPhoneNumber()?.FirstOrDefault()?.TelephoneNumber.Value,
-            StudyInstanceUID = observationIdentifier?.Identifier.Value,
+            OrderNumber = orderNumber,
             StudyCode = observationIdentifier?.AlternateIdentifier.Value,
             StudyName = observationIdentifier?.Text.Value,
             ReportURL = obx.ObservationSubID.Value,
             ReportText = text,
-            ReportFile = byteArray,
-            ModalityId = codes?.Identifier.Value,
             ServiceName = obx.ProducerSID.Identifier.Value,
             Patient = patient,
             Doctor = doctor
         };
 
         return record; 
+    }
+
+    public OBR GetOBRFromOBX(OBX obxSegment)
+    {
+        // Ensure the OBX segment is part of an ORU_R01 message
+        if (obxSegment.Message is ORU_R01 oruMessage)
+        {
+            var obr = obxSegment.Message as ORU_R01;
+
+            return (OBR)obr.GetStructure("OBR"); 
+            // Loop through all OBR segments to find the one that matches the OBX segment
+            
+        }
+
+        // Return null if no related OBR segment is found
+        return null;
     }
 
     private string BuildDoctorName(XCN doc)
