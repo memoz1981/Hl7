@@ -15,9 +15,8 @@ public class SuiEncoder : ISuiEncoder
         AssignMsh(appointment, message);
         AssignSCH(appointment, message);
         AssignPID(appointment, message);
-        AddNTE(message, appointment); 
         AddAis(message, appointment);
-
+        AddNTE(message, appointment);
         return parser.Encode(message);
     }
 
