@@ -9,8 +9,9 @@ public class AppointmentDto
     public string EstablishmentCode { get; set; }
     public string ModalityId { get; set; }
     public int DurationInMinutes { get; set; }
-    public PatientDtoMdm Patient { get; set; }
+    public PatientDtoSui Patient { get; set; }
     public DoctorDto Doctor { get; set; }
+    public string OrderNumber { get; set; }
     public string ServiceName { get; set; }
     public string ThirdPartyName { get; set; }
     public string EquipmentName { get; set; }
@@ -18,7 +19,6 @@ public class AppointmentDto
     public string StudyName { get; set; }
     public string MedicalRegistration { get; set; }
     public string Aetitle { get; set; }
-    // jpg, png , pdf
     public string FileExtension { get; set; }
-    public byte[] AppointmentFile { get; set; }
+    public string AppointmentFile { get; set; }
 }

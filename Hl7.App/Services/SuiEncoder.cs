@@ -25,41 +25,81 @@ public class SuiEncoder : ISuiEncoder
         return parser.Encode(message);
     }
 
-    private void AssignMsh(AppointmentDto appoint, SIU_S12 message)
+    private void AssignMsh(AppointmentDto appointment, SIU_S12 message)
     {
+        message.MSH.FieldSeparator.Value = "|";
+        message.MSH.EncodingCharacters.Value = @"^~\&";
+        message.MSH.SendingApplication.NamespaceID.Value = appointment.EstablishmentCode;
+        message.MSH.SendingFacility.NamespaceID.Value = appointment.EstablishmentName; 
+
         message.MSH.MessageType.MessageType.Value = "SUI";
         message.MSH.MessageType.TriggerEvent.Value = "S12";
-        message.MSH.FieldSeparator.Value = "|";
-        message.MSH.SendingApplication.NamespaceID.Value = "";
-        message.MSH.SendingFacility.NamespaceID.Value = "";
-        message.MSH.ReceivingApplication.NamespaceID.Value = "";
-        message.MSH.ReceivingFacility.NamespaceID.Value = "";
-        message.MSH.EncodingCharacters.Value = @"^~\&";
+        
         message.MSH.VersionID.Value = "2.3";
         message.MSH.DateTimeOfMessage.TimeOfAnEvent.SetLongDate(DateTime.Now);
-        message.MSH.MessageControlID.Value = "messageControlId";
-        message.MSH.ProcessingID.ProcessingID.Value = "P";
+        message.MSH.CharacterSet.Value = "UNICODE UTF-8"; 
     }
 
     private void AssignSCH(AppointmentDto appointment, SIU_S12 message)
     {
-        message.SCH.AppointmentDuration.Value = appointment.Duration.ToString(); //HOLD
-        message.SCH.AppointmentType.Text.Value = appointment.AppointmentType; //HOLD
-        message.SCH.AppointmentDurationUnits.Text.Value = ""; //Check
-        message.SCH.PlacerAppointmentID.UniversalID.Value = appointment.AppointmentId.ToString(); //HOLD
+        message.SCH.AppointmentDuration.Value = appointment.DurationInMinutes.ToString();
+        message.SCH.AppointmentType.Text.Value = appointment.AppointmentType; 
+        message.SCH.AppointmentDurationUnits.Text.Value = "minutes"; //Check
+        message.SCH.PlacerAppointmentID.EntityIdentifier.Value = appointment.AppointmentId.ToString(); 
     }
 
     private void AssignPID(AppointmentDto appointment, SIU_S12 message)
     {
-        var pid = message.AddPATIENT();
+        var patient = message.AddPATIENT();
 
-        pid.PID.SetIDPatientID.Value = appointment.Patient.Id;
-        //document type
-        pid.PID.Sex.Value = appointment.Patient.Sex;
-        pid.PID.DateOfBirth.TimeOfAnEvent.Set(appointment.Patient.DateOfBirth, "yyyy-MM-dd");
-        pid.PID.MotherSMaidenName.FamilyName.Value = appointment.Patient.MaternalSurname; 
+        //public DateTime DateOfBirth { get; set; }
+        //public string Sex { get; set; }
 
+        //Identifier
+        patient.PID.PatientIDExternalID.ID.Value = appointment.Patient.Id;
+        patient.PID.PatientIDExternalID.IdentifierTypeCode.Value = appointment.Patient.DocumentType;
+
+        //Name
+        var patientName = patient.PID.GetPatientName().FirstOrDefault();
+        //if (!patientName.Any())
+        //    patientName.Append(new NHapi.Model.V23.Datatype.XPN(,)); 
+        patientName.GivenName.Value = appointment.Patient.Name;
+        patientName.FamilyName.Value = appointment.Patient.ParentSurname;
+        patient.PID.MotherSMaidenName.FamilyName.Value = appointment.Patient.MaternalSurname;
+
+        //Details
+        patient.PID.Sex.Value = appointment.Patient.Sex;
+        patient.PID.DateOfBirth.TimeOfAnEvent.Set(appointment.Patient.DateOfBirth, "yyyy-MM-dd");
+
+        //    public string Address { get; set; }
+        //public string Locality { get; set; }
+        //public string City { get; set; }
+        //public string State { get; set; }
+        //public string Country { get; set; }
+        //public string Phone { get; set; }
+        //public string Email { get; set; }
+
+        //Address
+        var address = patient.PID.GetPatientAddress().FirstOrDefault();
+        address.StreetAddress.Value = appointment.Patient.Address;
+        address.OtherDesignation.Value = appointment.Patient.Locality; 
+        address.City.Value = appointment.Patient.City;
+        address.StateOrProvince.Value = appointment.Patient.State; 
+        address.Country.Value = appointment.Patient.Country;
+
+        //Contacts
+        var contacts = patient.PID.GetPhoneNumberHome().FirstOrDefault();
+        contacts.PhoneNumber.Value = appointment.Patient.Phone; 
+        contacts.EmailAddress.Value = appointment.Patient.Email;
+
+        //Pv1
+        var pv1 = patient.PV1.GetAdmittingDoctor().FirstOrDefault();
+        pv1.GivenName.Value = appointment.Doctor.Name;
+        pv1.IDNumber.Value = appointment.Doctor.DocumentNumber; 
     }
+
+
+
 
     private void AssignPV1(AppointmentDto appointment, SIU_S12 message)
     {
@@ -73,16 +113,16 @@ public class SuiEncoder : ISuiEncoder
 
     private void AssignAIG(AppointmentDto appointment, SIU_S12 message)
     {
-        throw new NotImplementedException();
+        
     }
 
     private void AssignAIL(AppointmentDto appointment, SIU_S12 message)
     {
-        throw new NotImplementedException();
+        
     }
 
     private void AssignAIP(AppointmentDto appointment, SIU_S12 message)
     {
-        throw new NotImplementedException();
+        
     }
 }

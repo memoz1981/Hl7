@@ -30,7 +30,6 @@ public class MdmDecoder : IMdmDecoder
         var phoneBusiness = mdm.PID.GetPhoneNumberBusiness().FirstOrDefault();
 
         var alternateIdentifier = mdm.PID.AlternatePatientIDPID; 
-        var identifier = mdm.PID.GetPatientIdentifierList().FirstOrDefault(); 
 
         var patient = new PatientDtoMdm()
         {

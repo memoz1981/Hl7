@@ -1,6 +1,7 @@
 ﻿using Hl7.App.Dto;
 using Hl7.App.Services;
 using Microsoft.AspNetCore.Mvc;
+using NHapi.Base;
 using System.Text.Json;
 
 namespace Hl7.App.Controllers;
@@ -17,18 +18,20 @@ public class AppointmentController : ControllerBase
 
     [HttpPost]
     [Route("[action]")]
-    public async Task<IActionResult> SendAppointment(string jsonText)
+    public async Task<IActionResult> SendAppointment(AppointmentDto appointment)
     {
         try
         {
-            var message = JsonSerializer.Deserialize<AppointmentDto>(jsonText);
-
-            var result = _encoder.Encode(message);
+            var result = _encoder.Encode(appointment);
 
             //async database operations here... 
             await Task.CompletedTask;
 
             return Ok(result);
+        }
+        catch (HL7Exception)
+        {
+            return BadRequest("Data could not be deserialized to json...");
         }
         catch (JsonException) //just a sample - need to manage json exceptions separately
         {
