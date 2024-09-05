@@ -32,7 +32,7 @@ public class MdmDecoder : IMdmDecoder
         var alternateIdentifier = mdm.PID.AlternatePatientIDPID; 
         var identifier = mdm.PID.GetPatientIdentifierList().FirstOrDefault(); 
 
-        var patient = new PatientDto()
+        var patient = new PatientDtoMdm()
         {
             Id = alternateIdentifier.IDNumber.Value,
             DocumentType = alternateIdentifier.IdentifierTypeCode.Value,

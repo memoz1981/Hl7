@@ -1,6 +1,6 @@
 ﻿namespace Hl7.App.Dto;
 
-public class PatientDto
+public class PatientDtoMdm
 {
     public string Id { get; set; }
     public string DocumentType { get; set; }

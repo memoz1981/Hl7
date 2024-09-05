@@ -5,9 +5,11 @@ public class AppointmentDto
     public int AppointmentId { get; set; }
     public DateTime AppointmentDate { get; set; }
     public string AppointmentType { get; set; }
+    public string EstablishmentName { get; set; }
+    public string EstablishmentCode { get; set; }
     public string ModalityId { get; set; }
-    public int Duration { get; set; }
-    public PatientDto Patient { get; set; }
+    public int DurationInMinutes { get; set; }
+    public PatientDtoMdm Patient { get; set; }
     public DoctorDto Doctor { get; set; }
     public string ServiceName { get; set; }
     public string ThirdPartyName { get; set; }
