@@ -79,6 +79,7 @@ public class SuiEncoder : ISuiEncoder
 
         //Pv1
         var doctor = patient.PV1.GetAdmittingDoctor(0);
+        patient.PV1.SetIDPatientVisit.Value = "1"; 
         doctor.GivenName.Value = appointment.Doctor.Name;
         doctor.IDNumber.Value = appointment.Doctor.DocumentNumber;
 
