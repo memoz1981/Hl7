@@ -58,17 +58,7 @@ public class MdmDecoder : IMdmDecoder
         var observationIdentifier = obx?.ObservationIdentifier;
         var observationValue = obx?.GetObservationValue().FirstOrDefault();
         var data = (RP)observationValue?.Data;
-        var file = data.ExtraComponents.GetComponent(0);
-
-        var fileText = string.Empty; 
-        if (file is not null)
-        {
-            fileText = file.Data.ToString(); 
-        }
-        var byteArray = string.IsNullOrWhiteSpace(fileText) ? null : Convert.FromBase64String(fileText);
-
         var text = data.Components.FirstOrDefault()?.ToString();
-        var codes = obx?.GetInterpretationCodes().FirstOrDefault();
 
         var record = new MedicalRecord()
         {

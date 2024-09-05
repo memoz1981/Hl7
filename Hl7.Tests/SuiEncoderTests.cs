@@ -68,7 +68,7 @@ public class SuiEncoderTests
             MedicalRegistration = "123456789",
             Aetitle = null,
             FileExtension = "pdf",
-            AppointmentFile = ""
+            AppointmentFile = "fsdfsdffsdffsdf"
         };
     }
 }

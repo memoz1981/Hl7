@@ -1,6 +1,7 @@
 ﻿using Hl7.App.Dto;
 using NHapi.Base.Parser;
 using NHapi.Model.V23.Message;
+using NHapi.Model.V23.Segment;
 
 namespace Hl7.App.Services;
 
@@ -14,13 +15,8 @@ public class SuiEncoder : ISuiEncoder
         AssignMsh(appointment, message);
         AssignSCH(appointment, message);
         AssignPID(appointment, message);
-        AssignPV1(appointment, message);
-        AssignRGS(appointment, message);
-        AssignAIG(appointment, message);
-        AssignAIL(appointment, message);
-        AssignAIP(appointment, message);
-
-        //additional fields/properties here...
+        AddNTE(message, appointment); 
+        AddAis(message, appointment);
 
         return parser.Encode(message);
     }
@@ -44,7 +40,7 @@ public class SuiEncoder : ISuiEncoder
     {
         message.SCH.AppointmentDuration.Value = appointment.DurationInMinutes.ToString();
         message.SCH.AppointmentType.Text.Value = appointment.AppointmentType; 
-        message.SCH.AppointmentDurationUnits.Text.Value = "minutes"; //Check
+        message.SCH.AppointmentDurationUnits.Text.Value = "MIN"; //Check
         message.SCH.PlacerAppointmentID.EntityIdentifier.Value = appointment.AppointmentId.ToString(); 
     }
 
@@ -55,15 +51,11 @@ public class SuiEncoder : ISuiEncoder
         var id = patient.PID.GetAlternatePatientID(0); 
 
         //Identifier
-        //var id = patient.PID.GetAlternatePatientID().FirstOrDefault(); 
-        
         id.ID.Value = appointment.Patient.Id;
         id.IdentifierTypeCode.Value = appointment.Patient.DocumentType;
 
         //Name
         var patientName = patient.PID.GetPatientName(0);
-        //if (!patientName.Any())
-        //    patientName.Append(new NHapi.Model.V23.Datatype.XPN(,)); 
         patientName.GivenName.Value = appointment.Patient.Name;
         patientName.FamilyName.Value = appointment.Patient.ParentSurname;
         patient.PID.MotherSMaidenName.FamilyName.Value = appointment.Patient.MaternalSurname;
@@ -71,14 +63,6 @@ public class SuiEncoder : ISuiEncoder
         //Details
         patient.PID.Sex.Value = appointment.Patient.Sex;
         patient.PID.DateOfBirth.TimeOfAnEvent.Set(appointment.Patient.DateOfBirth, "yyyy-MM-dd");
-
-        //    public string Address { get; set; }
-        //public string Locality { get; set; }
-        //public string City { get; set; }
-        //public string State { get; set; }
-        //public string Country { get; set; }
-        //public string Phone { get; set; }
-        //public string Email { get; set; }
 
         //Address
         var address = patient.PID.GetPatientAddress(0);
@@ -94,36 +78,46 @@ public class SuiEncoder : ISuiEncoder
         contacts.EmailAddress.Value = appointment.Patient.Email;
 
         //Pv1
-        var pv1 = patient.PV1.GetAdmittingDoctor(0);
-        pv1.GivenName.Value = appointment.Doctor.Name;
-        pv1.IDNumber.Value = appointment.Doctor.DocumentNumber; 
+        var doctor = patient.PV1.GetAdmittingDoctor(0);
+        doctor.GivenName.Value = appointment.Doctor.Name;
+        doctor.IDNumber.Value = appointment.Doctor.DocumentNumber;
+
+        var obx = patient.AddOBX();
+        AddObx(obx, appointment);
     }
 
-
-
-
-    private void AssignPV1(AppointmentDto appointment, SIU_S12 message)
+    private void AddObx(OBX obx, AppointmentDto appointment)
     {
+        obx.SetIDOBX.Value = "1"; 
+        obx.ObservationIdentifier.AlternateIdentifier.Value = appointment.StudyCode;
+        obx.ObservationIdentifier.Text.Value = appointment.StudyName;
+        obx.ProducerSID.Identifier.Value = appointment.ServiceName;
+        var observationValue = obx.GetObservationValue(0);
+        var comp1 = observationValue.ExtraComponents.GetComponent(0);  
+    }
+
+    private void AddNTE(SIU_S12 message, AppointmentDto appointment)
+    {
+        var nte = message.AddNTE(); 
+        nte.SetIDNotesAndComments.Value = "1";
+        nte.SourceOfComment.Value = appointment.FileExtension;
+        nte.GetComment(0).Value = appointment.AppointmentFile; 
+    }
+
+    private void AddAis(SIU_S12 message, AppointmentDto appointment)
+    {
+        var resource = message.AddRESOURCES();
+        var ais = resource.AddSERVICE();
+        ais.AIS.UniversalServiceIdentifier.Text.Value = appointment.Aetitle;
+        ais.AIS.SetIDAIS.Value = "1"; 
+    }
+
+    /*
+        public string ModalityId { get; set; }
+        public string ThirdPartyName { get; set; }
+        public string EquipmentName { get; set; }
+        public string MedicalRegistration { get; set; }
         
-    }
-
-    private void AssignRGS(AppointmentDto appointment, SIU_S12 message)
-    {
-        var res = message.AddRESOURCES(); 
-    }
-
-    private void AssignAIG(AppointmentDto appointment, SIU_S12 message)
-    {
-        
-    }
-
-    private void AssignAIL(AppointmentDto appointment, SIU_S12 message)
-    {
-        
-    }
-
-    private void AssignAIP(AppointmentDto appointment, SIU_S12 message)
-    {
-        
-    }
+        public string OrderNumber { get; set; }
+     */
 }
