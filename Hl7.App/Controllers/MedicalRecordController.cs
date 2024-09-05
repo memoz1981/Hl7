@@ -1,4 +1,5 @@
-﻿using Hl7.App.Services;
+﻿using Hl7.App.Dto;
+using Hl7.App.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hl7.App.Controllers;
@@ -16,11 +17,11 @@ public class MedicalRecordController : ControllerBase
 
     [HttpPost]
     [Route("[action]")]
-    public async Task<IActionResult> SendMedicalRecord(string mdmText)
+    public async Task<IActionResult> SendMedicalRecord([FromBody]SendMedicalRecordDto request)
     {
         try
         {
-            var result = _decoder.Decode(mdmText);
+            var result = _decoder.Decode(request.MdmText);
 
             //async database operations here... 
             await Task.CompletedTask;
