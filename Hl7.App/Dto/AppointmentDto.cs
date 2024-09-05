@@ -11,7 +11,7 @@ public class AppointmentDto
     public int DurationInMinutes { get; set; }
     public PatientDtoSui Patient { get; set; }
     public DoctorDto Doctor { get; set; }
-    public string OrderNumber { get; set; }
+    public int OrderNumber { get; set; }
     public string ServiceName { get; set; }
     public string ThirdPartyName { get; set; }
     public string EquipmentName { get; set; }

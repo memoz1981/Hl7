@@ -52,15 +52,16 @@ public class SuiEncoder : ISuiEncoder
     {
         var patient = message.AddPATIENT();
 
-        //public DateTime DateOfBirth { get; set; }
-        //public string Sex { get; set; }
+        var id = patient.PID.GetAlternatePatientID(0); 
 
         //Identifier
-        patient.PID.PatientIDExternalID.ID.Value = appointment.Patient.Id;
-        patient.PID.PatientIDExternalID.IdentifierTypeCode.Value = appointment.Patient.DocumentType;
+        //var id = patient.PID.GetAlternatePatientID().FirstOrDefault(); 
+        
+        id.ID.Value = appointment.Patient.Id;
+        id.IdentifierTypeCode.Value = appointment.Patient.DocumentType;
 
         //Name
-        var patientName = patient.PID.GetPatientName().FirstOrDefault();
+        var patientName = patient.PID.GetPatientName(0);
         //if (!patientName.Any())
         //    patientName.Append(new NHapi.Model.V23.Datatype.XPN(,)); 
         patientName.GivenName.Value = appointment.Patient.Name;
@@ -80,7 +81,7 @@ public class SuiEncoder : ISuiEncoder
         //public string Email { get; set; }
 
         //Address
-        var address = patient.PID.GetPatientAddress().FirstOrDefault();
+        var address = patient.PID.GetPatientAddress(0);
         address.StreetAddress.Value = appointment.Patient.Address;
         address.OtherDesignation.Value = appointment.Patient.Locality; 
         address.City.Value = appointment.Patient.City;
@@ -88,12 +89,12 @@ public class SuiEncoder : ISuiEncoder
         address.Country.Value = appointment.Patient.Country;
 
         //Contacts
-        var contacts = patient.PID.GetPhoneNumberHome().FirstOrDefault();
+        var contacts = patient.PID.GetPhoneNumberHome(0);
         contacts.PhoneNumber.Value = appointment.Patient.Phone; 
         contacts.EmailAddress.Value = appointment.Patient.Email;
 
         //Pv1
-        var pv1 = patient.PV1.GetAdmittingDoctor().FirstOrDefault();
+        var pv1 = patient.PV1.GetAdmittingDoctor(0);
         pv1.GivenName.Value = appointment.Doctor.Name;
         pv1.IDNumber.Value = appointment.Doctor.DocumentNumber; 
     }
