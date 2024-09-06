@@ -17,11 +17,14 @@ public class MedicalRecordController : ControllerBase
 
     [HttpPost]
     [Route("[action]")]
-    public async Task<IActionResult> SendMedicalRecord([FromBody]SendMedicalRecordDto request)
+    public async Task<IActionResult> SendMedicalRecord()
     {
         try
         {
-            var result = _decoder.Decode(request.MdmText);
+            using var reader = new StreamReader(HttpContext.Request.Body);
+            var mdmText = await reader.ReadToEndAsync();
+
+            var result = _decoder.Decode(mdmText);
 
             //async database operations here... 
             await Task.CompletedTask;
@@ -30,7 +33,7 @@ public class MedicalRecordController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Some error occured, see the logs...");
+            return StatusCode(500, $"Some error occured, {ex.Message}");
         }
     }
 }

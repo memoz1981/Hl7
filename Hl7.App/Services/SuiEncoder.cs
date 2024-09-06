@@ -61,7 +61,8 @@ public class SuiEncoder : ISuiEncoder
 
         //Details
         patient.PID.Sex.Value = appointment.Patient.Sex;
-        patient.PID.DateOfBirth.TimeOfAnEvent.Set(appointment.Patient.DateOfBirth, "yyyy-MM-dd");
+        if(appointment.Patient.DateOfBirth.HasValue)
+            patient.PID.DateOfBirth.TimeOfAnEvent.Set(appointment.Patient.DateOfBirth.Value, "yyyy-MM-dd");
 
         //Address
         var address = patient.PID.GetPatientAddress(0);

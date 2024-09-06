@@ -37,9 +37,9 @@ public class AppointmentController : ControllerBase
         {
             return BadRequest("Data could not be deserialized to json...");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(500, "Some error occured, see the logs...");
+            return StatusCode(500, $"Some error occured, {ex.Message}");
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Hl7.App.Dto;
 using NHapi.Base.Parser;
+using NHapi.Base.Validation.Implementation;
 using NHapi.Model.V271.Datatype;
 using NHapi.Model.V271.Message;
 using NHapi.Model.V271.Segment;
@@ -11,7 +12,10 @@ public class MdmDecoder : IMdmDecoder
 {
     public MedicalRecord Decode(string message)
     {
-        var parser = new PipeParser();
+        var parser = new PipeParser()
+        {
+            ValidationContext = new StrictValidation()
+        };
         var parsedMessage = parser.Parse(message);
         var mdm = parsedMessage as MDM_T02;
 
@@ -19,6 +23,19 @@ public class MdmDecoder : IMdmDecoder
             return null;
 
         return BuildMedicalRecord(mdm);
+    }
+
+    string EscapeText(string text)
+    {
+        var index1 = text.IndexOf('\\');
+
+        var builder = new StringBuilder();
+        builder.Append(text.Substring(0, 6));
+        builder.Append(@"\");
+        builder.Append(text.Substring(7, text.Length - 7));
+
+        return builder.ToString(); 
+
     }
 
     private MedicalRecord BuildMedicalRecord(MDM_T02 mdm)
@@ -38,7 +55,7 @@ public class MdmDecoder : IMdmDecoder
             ParentSurname = patientName?.FamilyName.Surname.Value,
             MaternalSurname = mdm.PID.GetMotherSMaidenName()?.FirstOrDefault()?.FamilyName.Surname.Value,
             Name = patientName?.GivenName.Value,
-            DateOfBirth = dateOfBirth,
+            DateOfBirth = dateOfBirth.Year == 1 ? null : dateOfBirth,
             Sex = mdm.PID.AdministrativeSex.Identifier.Value,
         };
 

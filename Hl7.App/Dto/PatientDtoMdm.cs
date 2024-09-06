@@ -7,7 +7,7 @@ public class PatientDtoMdm
     public string ParentSurname { get; set; }
     public string MaternalSurname { get; set; }
     public string Name { get; set; }
-    public DateTime DateOfBirth { get; set; }
+    public DateTime? DateOfBirth { get; set; }
     public string Sex { get; set; }
 }
 
