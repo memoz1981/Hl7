@@ -1,7 +1,10 @@
 using Hl7.App.Services;
+using Hl7.DAL;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
-
+const string CONNECTION_STRING_NAME = "Hl7"; 
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -9,7 +12,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ISuiEncoder, SuiEncoder>();
-builder.Services.AddSingleton<IMdmDecoder, MdmDecoder>(); 
+builder.Services.AddSingleton<IMdmDecoder, MdmDecoder>();
+builder.Services.AddDbContext<Hl7DbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString(CONNECTION_STRING_NAME))); 
 
 var app = builder.Build();
 
