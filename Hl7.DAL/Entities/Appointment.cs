@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Hl7.DAL.Model;
+namespace Hl7.DAL.Entities;
 
 public class Appointment
 {
