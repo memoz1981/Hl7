@@ -7,4 +7,5 @@ public class SendMedicalRecordRequest
     public int Id { get; set; }
     public DateTime EventTime { get; set; }
     public string MdmMessage { get; set; }
+    public MedicalRecord MedicalRecord { get; set; }
 }

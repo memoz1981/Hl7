@@ -11,4 +11,5 @@ public class Hl7DbContext : DbContext
     public DbSet<Doctor> Doctor { get; set; }
     public DbSet<MedicalRecord> MedicalRecord { get; set; }
     public DbSet<SendAppointmentResponse> SendAppointmentResponse { get; set; }
+    public DbSet<SendMedicalRecordRequest> SendMedicalRecordRequest { get; set; }
 }

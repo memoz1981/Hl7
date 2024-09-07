@@ -14,7 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ISuiEncoder, SuiEncoder>();
 builder.Services.AddSingleton<IMdmDecoder, MdmDecoder>();
-builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>(); 
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
 builder.Services.AddDbContext<Hl7DbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString(CONNECTION_STRING_NAME)));
 builder.Services.AddAutoMapper(typeof(Program));
