@@ -3,19 +3,18 @@
 public class ApiKeyValidation : IApiKeyValidation
 {
     private const string ApiKeyName = "ApiKey";
-    private readonly IConfiguration _configuration;
+    private readonly string _apiKey;
     public ApiKeyValidation(IConfiguration configuration)
     {
-        _configuration = configuration;
+        _apiKey = configuration.GetValue<string>(ApiKeyName); 
     }
     
     public bool IsValidApiKey(string userApiKey)
     {
         if (string.IsNullOrWhiteSpace(userApiKey))
             return false;
-        var apiKey = _configuration.GetValue<string>(ApiKeyName);
         
-        if (apiKey != userApiKey)
+        if (_apiKey != userApiKey)
             return false;
         
         return true;
