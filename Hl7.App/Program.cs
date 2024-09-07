@@ -1,3 +1,4 @@
+using Hl7.App.Security;
 using Hl7.App.Services;
 using Hl7.DAL;
 using Hl7.DAL.Repository;
@@ -16,6 +17,7 @@ builder.Services.AddSingleton<ISuiEncoder, SuiEncoder>();
 builder.Services.AddSingleton<IMdmDecoder, MdmDecoder>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
+builder.Services.AddTransient<IApiKeyValidation, ApiKeyValidation>();
 builder.Services.AddDbContext<Hl7DbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString(CONNECTION_STRING_NAME)));
 builder.Services.AddAutoMapper(typeof(Program));
@@ -28,6 +30,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+if(!app.Environment.IsDevelopment())
+    app.UseMiddleware<ApiKeyMiddleware>();
 
 app.UseHttpsRedirection();
 
