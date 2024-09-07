@@ -77,9 +77,15 @@ public class MdmDecoder : IMdmDecoder
         var data = (RP)observationValue?.Data;
         var text = data.Components.FirstOrDefault()?.ToString();
 
+        var orderNumberValue = -1;
+        if (!string.IsNullOrWhiteSpace(orderNumber))
+        {
+            int.TryParse(orderNumber, out orderNumberValue); 
+        }
+
         var record = new MedicalRecordDto()
         {
-            OrderNumber = orderNumber,
+            OrderNumber = orderNumberValue,
             StudyCode = observationIdentifier?.AlternateIdentifier.Value,
             StudyName = observationIdentifier?.Text.Value,
             ReportURL = obx.ObservationSubID.Value,

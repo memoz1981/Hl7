@@ -17,14 +17,14 @@ public class MdmDecoderTests
     {
         var message = @$"MSH|^~\&|RIS_VM|NOVACLINICA|VMRIS|NOVACLINICA|Fecha/Hora Mensage||MDM^T02|ID_UNICO_MSG|P|2.7.1|||||||UNICODE UTF-8
 PID|||24125412^^^^DNI|NRO DOC^^^^DOC TYPE|APELLIDO_PACIENTE33^NOMBRES33|APELLIDO MATERNO33|19780723|M|||CALLE 54^CAPITAL^CIUDAD^MENDOZA^^ARGENTINA||456456456^MAIL@MAIL.COM^|
-OBR|1|PLACER ORDER NUMBER^1|FILLER ORDER NUMBER||||FECHA HORA ESTUDIO||||||||||ACCESSIONNUMBER|CodigoMedico|informante|
+OBR|1|222^1|FILLER ORDER NUMBER||||FECHA HORA ESTUDIO||||||||||ACCESSIONNUMBER|CodigoMedico|informante|
 OBX|1|RP|studyintanceUID^NOMBRE ESTUDIO^^CODIGO ESTUDIO|URL| TXT^^^^{TestData.Base64String}|||MODALIDAD|||||||SERVICIO"; 
         //act
         var result = _decoder.Decode(message);
 
         //assert
         result.ShouldNotBeNull();
-        result.OrderNumber.ShouldBe("PLACER ORDER NUMBER");
+        result.OrderNumber.ShouldBe(222);
         result.StudyCode.ShouldBe("CODIGO ESTUDIO");
         result.StudyName.ShouldBe("NOMBRE ESTUDIO");
         result.ReportURL.ShouldBe("URL");
