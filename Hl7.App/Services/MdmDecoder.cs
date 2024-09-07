@@ -25,19 +25,6 @@ public class MdmDecoder : IMdmDecoder
         return BuildMedicalRecord(mdm);
     }
 
-    string EscapeText(string text)
-    {
-        var index1 = text.IndexOf('\\');
-
-        var builder = new StringBuilder();
-        builder.Append(text.Substring(0, 6));
-        builder.Append(@"\");
-        builder.Append(text.Substring(7, text.Length - 7));
-
-        return builder.ToString(); 
-
-    }
-
     private MedicalRecordDto BuildMedicalRecord(MDM_T02 mdm)
     {
         var patientName = mdm.PID.GetPatientName().FirstOrDefault();
