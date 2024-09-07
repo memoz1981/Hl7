@@ -8,13 +8,16 @@ public class SuiEncoder : ISuiEncoder
 {
     public string Encode(AppointmentDto appointment)
     {
+        if (appointment is null || appointment.Patient is null)
+            throw new ArgumentException("Appointment or patient cannot be null..."); 
+        
         var parser = new PipeParser();
         var message = new SIU_S12();
 
         AssignMsh(appointment, message);
         AssignSCH(appointment, message);
-        AssignPID(appointment, message);
-        AddAis(message, appointment);
+        AssignPatient(appointment, message);
+        AddResources(message, appointment);
         AddNTE(message, appointment);
         return parser.Encode(message);
     }
@@ -44,7 +47,7 @@ public class SuiEncoder : ISuiEncoder
         message.SCH.PlacerAppointmentID.EntityIdentifier.Value = appointment.OrderNumber.ToString(); 
     }
 
-    private void AssignPID(AppointmentDto appointment, SIU_S12 message)
+    private void AssignPatient(AppointmentDto appointment, SIU_S12 message)
     {
         var patient = message.AddPATIENT();
 
@@ -101,18 +104,20 @@ public class SuiEncoder : ISuiEncoder
         nte.GetComment(0).Value = appointment.AppointmentFile; 
     }
 
-    private void AddAis(SIU_S12 message, AppointmentDto appointment)
+    private void AddResources(SIU_S12 message, AppointmentDto appointment)
     {
         var resource = message.AddRESOURCES();
+        
+        //AIS
         var ais = resource.AddSERVICE();
         ais.AIS.SetIDAIS.Value = "1";
         ais.AIS.UniversalServiceIdentifier.Identifier.Value = appointment.StudyCode; 
         ais.AIS.UniversalServiceIdentifier.Text.Value = appointment.StudyName;
 
+        //AIL
         var ail = resource.AddLOCATION_RESOURCE();
         var locationResourceId = ail.AIL.GetLocationResourceID(0);
         locationResourceId.PointOfCare.Value = appointment.MedicalRegistration;
         locationResourceId.Room.Value = appointment.Aetitle; 
-
     }
 }
