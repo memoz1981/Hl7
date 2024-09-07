@@ -1,5 +1,6 @@
 using Hl7.App.Security;
 using Hl7.App.Services;
+using Hl7.App.Utilities;
 using Hl7.DAL;
 using Hl7.DAL.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ISuiEncoder, SuiEncoder>();
 builder.Services.AddSingleton<IMdmDecoder, MdmDecoder>();
+builder.Services.AddSingleton<IFileLogger, FileLogger>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
 builder.Services.AddTransient<IApiKeyValidation, ApiKeyValidation>();

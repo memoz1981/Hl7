@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using Hl7.App.Dto;
 using Hl7.App.Services;
+using Hl7.App.Utilities;
 using Hl7.DAL.Entities;
 using Hl7.DAL.Repository;
 using Microsoft.AspNetCore.Mvc;
-using NHapi.Base;
-using System.Text.Json;
 
 namespace Hl7.App.Controllers;
 [Route("api/[controller]")]
@@ -15,13 +14,15 @@ public class AppointmentController : ControllerBase
     private readonly ISuiEncoder _encoder;
     private readonly IAppointmentRepository _repo;
     private readonly IMapper _mapper;
+    private readonly IFileLogger _logger;
 
-    public AppointmentController(ISuiEncoder encoder, 
-        IAppointmentRepository repo, IMapper mapper)
+    public AppointmentController(ISuiEncoder encoder,
+        IAppointmentRepository repo, IMapper mapper, IFileLogger logger)
     {
         _encoder = encoder;
         _repo = repo;
         _mapper = mapper;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -30,6 +31,9 @@ public class AppointmentController : ControllerBase
     {
         try
         {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
             var entity = _mapper.Map<Appointment>(appointment); 
             var appointmentId = await _repo.AddAppointment(entity);
             var suiMessage = _encoder.Encode(appointment);
@@ -44,17 +48,10 @@ public class AppointmentController : ControllerBase
 
             return Ok(suiMessage);
         }
-        catch (HL7Exception)
-        {
-            return BadRequest("Data could not be deserialized to json...");
-        }
-        catch (JsonException) //just a sample - need to manage json exceptions separately
-        {
-            return BadRequest("Data could not be deserialized to json...");
-        }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Some error occured, {ex.Message}");
+            await _logger.Log(ex);
+            return StatusCode(500, $"Some error occured: {ex.GetType().Name} - {ex.Message}");
         }
     }
 
@@ -62,7 +59,15 @@ public class AppointmentController : ControllerBase
     [Route("[action]")]
     public async Task<IActionResult> GetAppointments()
     {
-        var results = await _repo.GetAll(); 
-        return Ok(results);
+        try
+        {
+            var results = await _repo.GetAll();
+            return Ok(results);
+        }
+        catch (Exception ex)
+        {
+            await _logger.Log(ex);
+            return StatusCode(500, $"Some error occured: {ex.GetType().Name} - {ex.Message}");
+        }
     }
 }
