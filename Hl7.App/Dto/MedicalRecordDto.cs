@@ -1,6 +1,6 @@
 ﻿namespace Hl7.App.Dto;
 
-public class MedicalRecord
+public class MedicalRecordDto
 {
     public PatientDtoMdm Patient { get; set; }
     public DoctorDto Doctor { get; set; }

@@ -1,12 +1,8 @@
 ﻿using Hl7.DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hl7.DAL.Repository;
-public class AppointmentRepository
+public class AppointmentRepository :IAppointmentRepository
 {
     private readonly Hl7DbContext _context;
 
@@ -17,7 +13,26 @@ public class AppointmentRepository
 
     public async Task<int> AddAppointment(Appointment appointment)
     {
-        _context.Appointment.Add(appointment); 
-        _
+        appointment.EventTime = DateTime.UtcNow;
+        await _context.Appointment.AddAsync(appointment); 
+        await _context.SaveChangesAsync();
+
+        return appointment.Id; 
+    }
+
+    public async Task AddSendAppointmentResponse(SendAppointmentResponse response)
+    {
+        await _context.SendAppointmentResponse.AddAsync(response);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<SendAppointmentResponse>> GetAll()
+    {
+        return await _context.SendAppointmentResponse
+            .Include(res => res.Appointment)
+            .ThenInclude(app => app.Patient)
+            .Include(res => res.Appointment)
+            .ThenInclude(app => app.Doctor)
+            .ToListAsync();
     }
 }

@@ -10,7 +10,7 @@ namespace Hl7.App.Services;
 
 public class MdmDecoder : IMdmDecoder
 {
-    public MedicalRecord Decode(string message)
+    public MedicalRecordDto Decode(string message)
     {
         var parser = new PipeParser()
         {
@@ -38,7 +38,7 @@ public class MdmDecoder : IMdmDecoder
 
     }
 
-    private MedicalRecord BuildMedicalRecord(MDM_T02 mdm)
+    private MedicalRecordDto BuildMedicalRecord(MDM_T02 mdm)
     {
         var patientName = mdm.PID.GetPatientName().FirstOrDefault();
         var patientAddress = mdm.PID.GetPatientAddress().FirstOrDefault();
@@ -77,7 +77,7 @@ public class MdmDecoder : IMdmDecoder
         var data = (RP)observationValue?.Data;
         var text = data.Components.FirstOrDefault()?.ToString();
 
-        var record = new MedicalRecord()
+        var record = new MedicalRecordDto()
         {
             OrderNumber = orderNumber,
             StudyCode = observationIdentifier?.AlternateIdentifier.Value,

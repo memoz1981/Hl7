@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Hl7.DAL.Entities;
 
@@ -27,5 +28,6 @@ public class Patient
     public string Phone { get; set; }
     public string Email { get; set; }
     public int AppointmentId { get; set; }
+    [JsonIgnore]
     public Appointment Appointment { get; set; }
 }

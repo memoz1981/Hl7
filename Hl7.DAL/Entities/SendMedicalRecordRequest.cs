@@ -5,5 +5,6 @@ public class SendMedicalRecordRequest
 {
     [Key]
     public int Id { get; set; }
+    public DateTime EventTime { get; set; }
     public string MdmMessage { get; set; }
 }

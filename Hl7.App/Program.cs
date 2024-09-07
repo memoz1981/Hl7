@@ -1,5 +1,6 @@
 using Hl7.App.Services;
 using Hl7.DAL;
+using Hl7.DAL.Repository;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -13,8 +14,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ISuiEncoder, SuiEncoder>();
 builder.Services.AddSingleton<IMdmDecoder, MdmDecoder>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>(); 
 builder.Services.AddDbContext<Hl7DbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString(CONNECTION_STRING_NAME))); 
+    options.UseSqlite(builder.Configuration.GetConnectionString(CONNECTION_STRING_NAME)));
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 

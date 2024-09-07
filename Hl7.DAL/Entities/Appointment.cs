@@ -6,6 +6,7 @@ public class Appointment
 {
     [Key]
     public int Id { get; set; }
+    public DateTime EventTime { get; set; }
     public int AppointmentId { get; set; }
     public DateTime AppointmentDate { get; set; }
     public string AppointmentType { get; set; }
