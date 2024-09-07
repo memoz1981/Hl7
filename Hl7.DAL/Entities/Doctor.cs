@@ -9,9 +9,11 @@ public class Doctor
     public int Id { get; set; }
     public string DocumentNumber { get; set; }
     public string Name { get; set; }
+    [JsonIgnore]
     public int? AppointmentId { get; set; }
     [JsonIgnore]
     public Appointment Appointment { get; set; }
+    [JsonIgnore]
     public int? MedicalRecordId { get; set; }
     [JsonIgnore]
     public MedicalRecord MedicalRecord { get; set; }

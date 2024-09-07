@@ -55,7 +55,7 @@ public class MedicalRecordController : ControllerBase
 
     [HttpGet]
     [Route("[action]")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetMedicalRecords()
     {
         var result = await _repo.GetAll();
         return Ok(result);

@@ -28,9 +28,11 @@ public class Patient
     public string Country { get; set; }
     public string Phone { get; set; }
     public string Email { get; set; }
+    [JsonIgnore]
     public int? AppointmentId { get; set; }
     [JsonIgnore]
     public Appointment Appointment { get; set; }
+    [JsonIgnore]
     public int? MedicalRecordId { get; set; }
     [JsonIgnore]
     public MedicalRecord MedicalRecord { get; set; }

@@ -5,5 +5,5 @@ public interface IAppointmentRepository
 {
     public Task<int> AddAppointment(Appointment appointment);
     public Task AddSendAppointmentResponse(SendAppointmentResponse response);
-    public Task<IEnumerable<SendAppointmentResponse>> GetAll(); 
+    public Task<IEnumerable<Appointment>> GetAll(); 
 }

@@ -26,13 +26,12 @@ public class AppointmentRepository :IAppointmentRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<SendAppointmentResponse>> GetAll()
+    public async Task<IEnumerable<Appointment>> GetAll()
     {
-        return await _context.SendAppointmentResponse
-            .Include(res => res.Appointment)
-            .ThenInclude(app => app.Patient)
-            .Include(res => res.Appointment)
-            .ThenInclude(app => app.Doctor)
+        return await _context.Appointment
+            .Include(app => app.SendAppointmentResponse)
+            .Include(app => app.Patient)
+            .Include(app => app.Doctor)
             .ToListAsync();
     }
 }

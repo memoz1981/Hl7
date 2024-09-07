@@ -4,3 +4,5 @@
 *.pubxml*
 *dotnet-tools.json
 *.db
+**shm
+**wal
