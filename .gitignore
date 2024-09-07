@@ -3,3 +3,4 @@
 **obj/
 *.pubxml*
 *dotnet-tools.json
+*.db

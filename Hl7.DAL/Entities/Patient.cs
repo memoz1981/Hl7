@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Hl7.DAL.Entities;
@@ -27,7 +28,10 @@ public class Patient
     public string Country { get; set; }
     public string Phone { get; set; }
     public string Email { get; set; }
-    public int AppointmentId { get; set; }
+    public int? AppointmentId { get; set; }
     [JsonIgnore]
     public Appointment Appointment { get; set; }
+    public int? MedicalRecordId { get; set; }
+    [JsonIgnore]
+    public MedicalRecord MedicalRecord { get; set; }
 }

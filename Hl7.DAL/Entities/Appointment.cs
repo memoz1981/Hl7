@@ -29,4 +29,5 @@ public class Appointment
     public string AppointmentFile { get; set; }
     public Patient Patient { get; set; }
     public Doctor Doctor { get; set; }
+    public SendAppointmentResponse SendAppointmentResponse { get; set; }
 }
