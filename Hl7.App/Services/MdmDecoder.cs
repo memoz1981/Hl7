@@ -77,10 +77,10 @@ public class MdmDecoder : IMdmDecoder
         var data = (RP)observationValue?.Data;
         var text = data.Components.FirstOrDefault()?.ToString();
 
-        var orderNumberValue = -1;
-        if (!string.IsNullOrWhiteSpace(orderNumber))
+        int? orderNumberValue = null;
+        if (!string.IsNullOrWhiteSpace(orderNumber) && int.TryParse(orderNumber, out var num)) 
         {
-            int.TryParse(orderNumber, out orderNumberValue); 
+            orderNumberValue = num; 
         }
 
         var record = new MedicalRecordDto()

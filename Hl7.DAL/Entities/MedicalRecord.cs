@@ -6,7 +6,7 @@ public class MedicalRecord
 {
     [Key]
     public int Id { get; set; }
-    public string OrderNumber { get; set; }
+    public int? OrderNumber { get; set; }
     public string ServiceName { get; set; }
     public string StudyCode { get; set; }
     public string StudyName { get; set; }
