@@ -4,7 +4,6 @@ using NHapi.Base.Validation.Implementation;
 using NHapi.Model.V271.Datatype;
 using NHapi.Model.V271.Message;
 using NHapi.Model.V271.Segment;
-using System.Text;
 
 namespace Hl7.App.Services;
 
@@ -46,14 +45,6 @@ public class MdmDecoder : IMdmDecoder
             Sex = mdm.PID.AdministrativeSex.Identifier.Value,
         };
 
-        var doc = mdm.PV1.GetAttendingDoctor().FirstOrDefault(); 
-
-        var doctor = new DoctorDto()
-        {
-            DocumentNumber = doc?.PersonIdentifier.Value,
-            Name = BuildDoctorName(doc)
-        };
-
         var observation = mdm.OBSERVATIONs.FirstOrDefault(); 
         var obx = observation?.OBX;
         var obr = (OBR)(mdm.Message.GetStructure("OBR"));
@@ -70,6 +61,17 @@ public class MdmDecoder : IMdmDecoder
             orderNumberValue = num; 
         }
 
+        var modality = obx?.GetInterpretationCodes()?.FirstOrDefault()?.Identifier.Value;
+
+        var doctorDocumentNumber = obr?.PlacerField1.Value;
+        var doctorName = obr?.PlacerField2.Value;
+ 
+        var doctor = new DoctorDto()
+        {
+            DocumentNumber = doctorDocumentNumber,
+            Name = doctorName
+        };
+
         var record = new MedicalRecordDto()
         {
             OrderNumber = orderNumberValue,
@@ -78,60 +80,11 @@ public class MdmDecoder : IMdmDecoder
             ReportURL = obx.ObservationSubID.Value,
             ReportText = text,
             ServiceName = obx.ProducerSID.Identifier.Value,
+            Modality = modality,
             Patient = patient,
             Doctor = doctor
         };
 
         return record; 
-    }
-
-    public OBR GetOBRFromOBX(OBX obxSegment)
-    {
-        // Ensure the OBX segment is part of an ORU_R01 message
-        if (obxSegment.Message is ORU_R01 oruMessage)
-        {
-            var obr = obxSegment.Message as ORU_R01;
-
-            return (OBR)obr.GetStructure("OBR"); 
-            // Loop through all OBR segments to find the one that matches the OBX segment
-            
-        }
-
-        // Return null if no related OBR segment is found
-        return null;
-    }
-
-    private string BuildDoctorName(XCN doc)
-    {
-        if (doc == null)
-            return string.Empty; 
-
-        var builder = new StringBuilder();
-        var a = builder.ToString();
-
-        if (!string.IsNullOrWhiteSpace(doc.DegreeEgMD.Value))
-        {
-            builder.Append(doc.DegreeEgMD.Value);
-            builder.Append(" "); 
-        }
-
-        if (!string.IsNullOrWhiteSpace(doc.PrefixEgDR.Value))
-        {
-            builder.Append(doc.PrefixEgDR.Value);
-            builder.Append(" ");
-        }
-
-        if (!string.IsNullOrWhiteSpace(doc.GivenName.Value))
-        {
-            builder.Append(doc.GivenName.Value);
-            builder.Append(" ");
-        }
-
-        if (!string.IsNullOrWhiteSpace(doc.FamilyName.Surname.Value))
-        {
-            builder.Append(doc.FamilyName.Surname.Value);
-        }
-
-        return builder.ToString();
     }
 }

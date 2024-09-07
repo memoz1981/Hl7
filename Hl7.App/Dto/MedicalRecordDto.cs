@@ -10,4 +10,5 @@ public class MedicalRecordDto
     public string StudyName { get; set; }
     public string ReportURL { get; set; }
     public string ReportText { get; set; }
+    public string Modality { get; set; }
 }

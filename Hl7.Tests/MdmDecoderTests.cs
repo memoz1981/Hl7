@@ -30,6 +30,7 @@ OBX|1|RP|studyintanceUID^NOMBRE ESTUDIO^^CODIGO ESTUDIO|URL| TXT^^^^{TestData.Ba
         result.ReportURL.ShouldBe("URL");
         result.ReportText.ShouldBe("TXT");
         result.ServiceName.ShouldBe("SERVICIO");
+        result.Modality.ShouldBe("MODALIDAD"); 
 
         //PID|1| |||APELLIDO PAC^Nombre Pac^^^^^^||20100201|||
         var patient = result.Patient;
@@ -42,7 +43,7 @@ OBX|1|RP|studyintanceUID^NOMBRE ESTUDIO^^CODIGO ESTUDIO|URL| TXT^^^^{TestData.Ba
         patient.Sex.ShouldBe("M");
 
         var doctor = result.Doctor;
-        doctor.DocumentNumber.ShouldBeNullOrEmpty();
-        doctor.Name.ShouldBeNullOrEmpty(); 
+        doctor.DocumentNumber.ShouldBe("CodigoMedico");
+        doctor.Name.ShouldBe("informante"); 
     }
 }

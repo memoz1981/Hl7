@@ -12,6 +12,7 @@ public class MedicalRecord
     public string StudyName { get; set; }
     public string ReportURL { get; set; }
     public string ReportText { get; set; }
+    public string Modality { get; set; }
     public Patient Patient { get; set; }
     public Doctor Doctor { get; set; }
     public int SendMedicalRecordRequestId { get; set; }
