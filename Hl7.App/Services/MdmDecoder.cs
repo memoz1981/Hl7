@@ -72,6 +72,10 @@ public class MdmDecoder : IMdmDecoder
             Name = doctorName
         };
 
+        var reportDate = obr.ObservationDateTime.GetAsDate();
+
+        var studyUid = obx.ObservationIdentifier.Identifier.Value; 
+
         var record = new MedicalRecordDto()
         {
             OrderNumber = orderNumberValue,
@@ -82,7 +86,9 @@ public class MdmDecoder : IMdmDecoder
             ServiceName = obx.ProducerSID.Identifier.Value,
             Modality = modality,
             Patient = patient,
-            Doctor = doctor
+            Doctor = doctor,
+            ReportDate = reportDate.Year == 1 ? null : reportDate,
+            StudyUID = studyUid
         };
 
         return record; 

@@ -15,6 +15,8 @@ public class MedicalRecord
     public string Modality { get; set; }
     public Patient Patient { get; set; }
     public Doctor Doctor { get; set; }
+    public DateTime? ReportDate { get; set; }
+    public string StudyUID { get; set; }
     public int SendMedicalRecordRequestId { get; set; }
     [JsonIgnore]
     public SendMedicalRecordRequest SendMedicalRecordRequest { get; set; }

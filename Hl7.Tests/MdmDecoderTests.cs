@@ -17,7 +17,7 @@ public class MdmDecoderTests
     {
         var message = @$"MSH|^~\&|RIS_VM|NOVACLINICA|VMRIS|NOVACLINICA|Fecha/Hora Mensage||MDM^T02|ID_UNICO_MSG|P|2.7.1|||||||UNICODE UTF-8
 PID|||24125412^^^^DNI|NRO DOC^^^^DOC TYPE|APELLIDO_PACIENTE33^NOMBRES33|APELLIDO MATERNO33|19780723|M|||CALLE 54^CAPITAL^CIUDAD^MENDOZA^^ARGENTINA||456456456^MAIL@MAIL.COM^|
-OBR|1|222^1|FILLER ORDER NUMBER||||FECHA HORA ESTUDIO||||||||||ACCESSIONNUMBER|CodigoMedico|informante|
+OBR|1|222^1|FILLER ORDER NUMBER||||19811021||||||||||ACCESSIONNUMBER|CodigoMedico|informante|
 OBX|1|RP|studyintanceUID^NOMBRE ESTUDIO^^CODIGO ESTUDIO|URL| TXT^^^^{TestData.Base64String}|||MODALIDAD|||||||SERVICIO"; 
         //act
         var result = _decoder.Decode(message);
@@ -30,7 +30,9 @@ OBX|1|RP|studyintanceUID^NOMBRE ESTUDIO^^CODIGO ESTUDIO|URL| TXT^^^^{TestData.Ba
         result.ReportURL.ShouldBe("URL");
         result.ReportText.ShouldBe("TXT");
         result.ServiceName.ShouldBe("SERVICIO");
-        result.Modality.ShouldBe("MODALIDAD"); 
+        result.Modality.ShouldBe("MODALIDAD");
+        result.ReportDate.ShouldBe(new DateTime(1981, 10, 21));
+        result.StudyUID.ShouldBe("studyintanceUID");
 
         //PID|1| |||APELLIDO PAC^Nombre Pac^^^^^^||20100201|||
         var patient = result.Patient;

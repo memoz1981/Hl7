@@ -11,4 +11,6 @@ public class MedicalRecordDto
     public string ReportURL { get; set; }
     public string ReportText { get; set; }
     public string Modality { get; set; }
+    public DateTime? ReportDate { get; set; }
+    public string StudyUID { get; set; }
 }
