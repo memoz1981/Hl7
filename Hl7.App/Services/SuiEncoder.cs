@@ -91,17 +91,6 @@ public class SuiEncoder : ISuiEncoder
         patient.PV1.HospitalService.Value = appointment.ServiceName;
         patient.PV1.GetFinancialClass(0).FinancialClassCode.Value = appointment.ThirdPartyName;
         patient.PV1.GetOtherHealthcareProvider(0).IDNumber.Value = appointment.EquipmentName; 
-
-        var obx = patient.AddOBX();
-        obx.SetIDOBX.Value = "1";
-    }
-
-    private void AddNTE(SIU_S12 message, AppointmentDto appointment)
-    {
-        var nte = message.AddNTE(); 
-        nte.SetIDNTE.Value = "1";
-        nte.SourceOfComment.Value = appointment.FileExtension;
-        nte.GetComment(0).Value = appointment.AppointmentFile; 
     }
 
     private void AddResources(SIU_S12 message, AppointmentDto appointment)
@@ -116,8 +105,16 @@ public class SuiEncoder : ISuiEncoder
 
         //AIL
         var ail = resource.AddLOCATION_RESOURCE();
+        ail.AIL.SetIDAIL.Value = "1";
         var locationResourceId = ail.AIL.GetLocationResourceID(0);
         locationResourceId.PointOfCare.Value = appointment.MedicalRegistration;
         locationResourceId.Room.Value = appointment.Aetitle; 
+    }
+    private void AddNTE(SIU_S12 message, AppointmentDto appointment)
+    {
+        var nte = message.AddNTE();
+        nte.SetIDNTE.Value = "1";
+        nte.SourceOfComment.Value = appointment.FileExtension;
+        nte.GetComment(0).Value = appointment.AppointmentFile;
     }
 }
